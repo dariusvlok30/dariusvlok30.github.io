@@ -18,6 +18,14 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
 
+      // If near the bottom of the page, always highlight Contact
+      const nearBottom =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
+      if (nearBottom) {
+        setActiveSection("contact");
+        return;
+      }
+
       const sections = navLinks.map((l) => l.href.replace("#", ""));
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
