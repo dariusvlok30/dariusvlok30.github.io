@@ -205,6 +205,28 @@ export const projects = [
     icon: "Zap",
     highlight: false,
   },
+  {
+    title: "n8n Automation Platform",
+    status: "Production",
+    description:
+      "Self-hosted n8n instance managing end-to-end business automation. Features an AI agent connected via MCP that interacts directly with databases, Teams, email, and chat apps. Automates lead generation through web scraping, integrates cloud storage (Google Drive, OneDrive), and handles document workflows, notifications, and scheduling — all orchestrated as a full-stack automation backbone.",
+    tags: [
+      "n8n",
+      "AI Agent",
+      "MCP",
+      "Database Integration",
+      "Microsoft Teams",
+      "Email Automation",
+      "Web Scraping",
+      "Lead Generation",
+      "Google Drive",
+      "OneDrive",
+      "Chat Automation",
+      "Self-Hosted",
+    ],
+    icon: "Workflow",
+    highlight: false,
+  },
 ];
 
 export const videoDemos = [

@@ -4,7 +4,7 @@ import {
   Gauge, Lightbulb, Layers, Sparkles, TrendingUp, BookOpen,
   BarChart3, Bot, Shield, Zap, Globe,
   Mail, MessageCircle, Linkedin, MapPin, ArrowUpRight,
-  GraduationCap, Send, Terminal, Heart,
+  GraduationCap, Terminal, Heart,
   Monitor, Cog,
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
@@ -391,124 +391,62 @@ export const EducationSection = () => {
 /* ============ CONTACT ============ */
 export const ContactSection = () => {
   const [ref, visible] = useReveal();
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [sent, setSent] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Mock: store in localStorage
-    const messages = JSON.parse(localStorage.getItem("portfolio_messages") || "[]");
-    messages.push({ ...formData, date: new Date().toISOString() });
-    localStorage.setItem("portfolio_messages", JSON.stringify(messages));
-    setSent(true);
-    setFormData({ name: "", email: "", message: "" });
-    setTimeout(() => setSent(false), 3000);
-  };
 
   return (
     <section id="contact" className="py-32 px-6">
       <div className="max-w-6xl mx-auto">
         <SectionHeading label="07 — Contact" title="Let's Connect" subtitle="Have a project in mind or want to collaborate? Reach out." />
 
-        <div ref={ref} className={`grid md:grid-cols-2 gap-8 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          {/* Info */}
-          <div className="space-y-6">
-            <GlassCard className="p-6 group">
-              <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
-                  <Mail className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
-                </div>
-                <div>
-                  <p className="text-xs text-white/30 mb-0.5">Email</p>
-                  <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors duration-300">{personalInfo.email}</p>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-white/20 ml-auto group-hover:text-white/50 transition-colors duration-300" />
-              </a>
-            </GlassCard>
-
-            <GlassCard className="p-6 group">
-              <a href={personalInfo.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
-                  <MessageCircle className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
-                </div>
-                <div>
-                  <p className="text-xs text-white/30 mb-0.5">WhatsApp</p>
-                  <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors duration-300">{personalInfo.phone}</p>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-white/20 ml-auto group-hover:text-white/50 transition-colors duration-300" />
-              </a>
-            </GlassCard>
-
-            <GlassCard className="p-6 group">
-              <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
-                  <Linkedin className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
-                </div>
-                <div>
-                  <p className="text-xs text-white/30 mb-0.5">LinkedIn</p>
-                  <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors duration-300">linkedin.com/in/darius-vlok</p>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-white/20 ml-auto group-hover:text-white/50 transition-colors duration-300" />
-              </a>
-            </GlassCard>
-
-            <GlassCard className="p-6 group">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-white/40" />
-                </div>
-                <div>
-                  <p className="text-xs text-white/30 mb-0.5">Location</p>
-                  <p className="text-sm text-white/60">{personalInfo.location}</p>
-                </div>
+        <div ref={ref} className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-4 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <GlassCard className="p-6 group">
+            <a href={`mailto:${personalInfo.email}`} className="flex flex-col gap-4 h-full">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
+                <Mail className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
               </div>
-            </GlassCard>
-          </div>
+              <div className="flex-1">
+                <p className="text-xs text-white/30 mb-0.5">Email</p>
+                <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors duration-300 break-all">{personalInfo.email}</p>
+              </div>
+              <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors duration-300" />
+            </a>
+          </GlassCard>
 
-          {/* Form */}
-          <GlassCard hover={false} className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-xs text-white/30 font-mono uppercase tracking-wider mb-2">Name</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white/80 placeholder-white/15 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition-all duration-300"
-                  placeholder="Your name"
-                />
+          <GlassCard className="p-6 group">
+            <a href={personalInfo.whatsapp} target="_blank" rel="noopener noreferrer" className="flex flex-col gap-4 h-full">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
+                <MessageCircle className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
               </div>
-              <div>
-                <label className="block text-xs text-white/30 font-mono uppercase tracking-wider mb-2">Email</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white/80 placeholder-white/15 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition-all duration-300"
-                  placeholder="your@email.com"
-                />
+              <div className="flex-1">
+                <p className="text-xs text-white/30 mb-0.5">WhatsApp</p>
+                <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors duration-300">{personalInfo.phone}</p>
               </div>
-              <div>
-                <label className="block text-xs text-white/30 font-mono uppercase tracking-wider mb-2">Message</label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  required
-                  rows={5}
-                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white/80 placeholder-white/15 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition-all duration-300 resize-none"
-                  placeholder="Tell me about your project..."
-                />
+              <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors duration-300" />
+            </a>
+          </GlassCard>
+
+          <GlassCard className="p-6 group">
+            <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="flex flex-col gap-4 h-full">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
+                <Linkedin className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
               </div>
-              <button
-                type="submit"
-                className="w-full py-3 rounded-xl bg-white text-black font-medium text-sm flex items-center justify-center gap-2 hover:bg-white/90 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-              >
-                {sent ? "Message Sent!" : "Send Message"}
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
+              <div className="flex-1">
+                <p className="text-xs text-white/30 mb-0.5">LinkedIn</p>
+                <p className="text-sm text-white/60 group-hover:text-white/80 transition-colors duration-300">linkedin.com/in/darius-vlok</p>
+              </div>
+              <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors duration-300" />
+            </a>
+          </GlassCard>
+
+          <GlassCard className="p-6">
+            <div className="flex flex-col gap-4 h-full">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-white/40" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-white/30 mb-0.5">Location</p>
+                <p className="text-sm text-white/60">{personalInfo.location}</p>
+              </div>
+            </div>
           </GlassCard>
         </div>
       </div>
