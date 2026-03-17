@@ -1,10 +1,12 @@
 {
-  "buildCommand": "craco build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "CI=false craco build",
   "outputDirectory": "build",
   "framework": "create-react-app",
   "env": {
     "CI": "false",
     "DISABLE_ESLINT_PLUGIN": "true",
-    "SKIP_PREFLIGHT_CHECK": "true"
+    "SKIP_PREFLIGHT_CHECK": "true",
+    "GENERATE_SOURCEMAP": "false"
   }
 }
