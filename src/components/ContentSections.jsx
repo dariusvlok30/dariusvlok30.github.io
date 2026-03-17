@@ -10,9 +10,7 @@ import {
 import { SplineScene } from "./ui/splite";
 import { Spotlight } from "./ui/spotlight";
 import { GlowingEffect } from "./ui/glowing-effect";
-import { CardPattern, generateRandomString } from "./ui/evervault-card";
-import { HoverBorderGradient } from "./ui/hover-border-gradient";
-import { useMotionValue } from "motion/react";
+import { useMotionValue, useMotionTemplate, motion } from "motion/react";
 import { Badge } from "../components/ui/badge";
 import { personalInfo, skills, experience, projects, education, differentiators, videoDemos } from "../data/mock";
 
@@ -49,41 +47,39 @@ const CardDecorator = () => (
   </>
 );
 
-/* GlassCard — EvervaultCard hover baked in + Chelsea blue HoverBorderGradient */
+/* Subtle Chelsea blue spotlight that follows the mouse — never obscures text */
+const CardShimmer = ({ mouseX, mouseY }) => {
+  const maskImage = useMotionTemplate`radial-gradient(220px at ${mouseX}px ${mouseY}px, rgba(3,70,148,0.18), transparent)`;
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300 opacity-0 group-hover/card:opacity-100"
+      style={{ background: maskImage }}
+    />
+  );
+};
+
 const GlassCard = ({ children, className = "", hover = true }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const [randomString, setRandomString] = useState(() => generateRandomString(1200));
 
   function onMouseMove({ currentTarget, clientX, clientY }) {
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
-    setRandomString(generateRandomString(1200));
   }
 
   return (
-    <HoverBorderGradient
-      as="div"
-      containerClassName={`w-full rounded-2xl ${className}`}
-      className="w-full p-0 bg-transparent rounded-2xl"
-      duration={1.5}
+    <div
+      onMouseMove={onMouseMove}
+      className={`group/card relative rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl overflow-hidden ${
+        hover ? "hover:border-[#034694]/30 hover:shadow-[0_8px_40px_rgba(3,70,148,0.07)] transition-all duration-500" : ""
+      } ${className}`}
     >
-      <div
-        onMouseMove={onMouseMove}
-        className={`group/card relative rounded-2xl border border-white/[0.06] bg-[#050505]/80 backdrop-blur-xl overflow-hidden w-full ${
-          hover ? "hover:border-[#034694]/20 transition-all duration-500" : ""
-        }`}
-      >
-        <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
-        <CardDecorator />
-        {/* Evervault overlay */}
-        <div className="pointer-events-none absolute inset-0 z-0">
-          <CardPattern mouseX={mouseX} mouseY={mouseY} randomString={randomString} />
-        </div>
-        <div className="relative z-10">{children}</div>
-      </div>
-    </HoverBorderGradient>
+      <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
+      <CardDecorator />
+      <CardShimmer mouseX={mouseX} mouseY={mouseY} />
+      <div className="relative z-10">{children}</div>
+    </div>
   );
 };
 
@@ -147,11 +143,11 @@ export const AboutSection = () => {
             {aiTools.map((tool) => (
               <div
                 key={tool.name}
-                className="group relative p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-[#034694]/10 hover:border-[#034694]/30 transition-all duration-300 overflow-hidden"
+                className="relative p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-[#034694]/10 hover:border-[#034694]/30 transition-all duration-300"
               >
                 <CardDecorator />
                 <span className="text-sm font-semibold text-white/80 block mb-1">{tool.name}</span>
-                <span className="text-xs text-white/30">{tool.desc}</span>
+                <span className="text-xs text-white/30 leading-relaxed">{tool.desc}</span>
               </div>
             ))}
           </div>
