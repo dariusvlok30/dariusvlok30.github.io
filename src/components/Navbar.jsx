@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, Terminal } from "lucide-react";
-import { GlassFilter } from "./ui/button";
+import { HoverBorderGradient } from "./ui/hover-border-gradient";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -18,23 +18,13 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
-
-      const nearBottom =
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
-      if (nearBottom) {
-        setActiveSection("contact");
-        return;
-      }
-
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
+      if (nearBottom) { setActiveSection("contact"); return; }
       const sections = navLinks.map((l) => l.href.replace("#", ""));
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 150) {
-            setActiveSection(sections[i]);
-            return;
-          }
+        if (el && el.getBoundingClientRect().top <= 150) {
+          setActiveSection(sections[i]); return;
         }
       }
       setActiveSection("");
@@ -46,96 +36,72 @@ const Navbar = () => {
   const handleClick = (e, href) => {
     e.preventDefault();
     setMobileOpen(false);
-    const el = document.querySelector(href);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <>
-      {/* Render the glass filter once for the whole navbar */}
-      <GlassFilter id="nav-glass" />
+      <nav className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${scrolled ? "top-4" : "top-6"}`}>
 
-      <nav
-        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-          scrolled ? "top-4" : "top-6"
-        }`}
-      >
-        {/* Desktop Nav - Liquid Glass Bubble */}
-        <div className="hidden md:block relative">
-          {/* Glass distortion layer */}
-          <div
-            className="absolute inset-0 rounded-full -z-10 overflow-hidden"
-            style={{ backdropFilter: 'url("#nav-glass") blur(12px)' }}
-          />
-          {/* Glass surface */}
-          <div
-            className={`absolute inset-0 rounded-full -z-10 transition-all duration-500 ${
-              scrolled
-                ? "shadow-[0_0_6px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3px_rgba(255,255,255,0.12),inset_-3px_-3px_0.5px_-3px_rgba(255,255,255,0.08),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.3),inset_-1px_-1px_1px_-0.5px_rgba(255,255,255,0.2),inset_0_0_6px_6px_rgba(255,255,255,0.04),0_0_12px_rgba(0,0,0,0.15)] bg-white/[0.06]"
-                : "shadow-[0_0_6px_rgba(0,0,0,0.02),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.2),inset_0_0_6px_6px_rgba(255,255,255,0.02)] bg-white/[0.03]"
-            }`}
-          />
-          {/* Border */}
-          <div
-            className={`absolute inset-0 rounded-full -z-10 border transition-all duration-500 ${
-              scrolled ? "border-white/15" : "border-white/[0.06]"
-            }`}
-          />
+        {/* Desktop — nav pill wrapped in HoverBorderGradient */}
+        <div className="hidden md:block">
+          <HoverBorderGradient
+            as="div"
+            containerClassName="rounded-full w-auto"
+            className="p-0 bg-transparent rounded-full w-auto"
+            duration={2}
+          >
+            <div className={`flex items-center gap-1 px-2 py-2 rounded-full backdrop-blur-2xl transition-all duration-500 ${
+              scrolled ? "bg-black/70" : "bg-black/40"
+            }`}>
+              {/* Logo */}
+              <a
+                href="#hero"
+                onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                className="flex items-center gap-2 px-4 py-2 mr-1 rounded-full hover:bg-white/[0.08] transition-colors duration-300"
+              >
+                <Terminal className="w-4 h-4 text-[#4a90d9]" />
+                <span className="text-sm font-semibold text-white tracking-wide font-mono">DV</span>
+              </a>
 
-          <div className="flex items-center gap-1 px-2 py-2 rounded-full">
-            <a
-              href="#hero"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="flex items-center gap-2 px-4 py-2 mr-2 rounded-full hover:bg-white/[0.08] transition-colors duration-300"
-            >
-              <Terminal className="w-4 h-4 text-white/70" />
-              <span className="text-sm font-semibold text-white tracking-wide font-mono">DV</span>
-            </a>
+              <div className="w-px h-5 bg-white/10 mr-1" />
 
-            <div className="w-px h-5 bg-white/10 mr-1" />
-
-            {navLinks.map((link) => {
-              const isActive = activeSection === link.href.replace("#", "");
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleClick(e, link.href)}
-                  className={`relative px-4 py-2 text-sm rounded-full transition-all duration-300 ${
-                    isActive
-                      ? "text-white bg-white/10"
-                      : "text-white/50 hover:text-white hover:bg-white/[0.06]"
-                  }`}
-                >
-                  {link.label}
-                </a>
-              );
-            })}
-          </div>
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.href.replace("#", "");
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(e) => handleClick(e, link.href)}
+                    className={`relative px-4 py-2 text-sm rounded-full transition-all duration-300 ${
+                      isActive
+                        ? "text-white bg-[#034694]/30 border border-[#034694]/40"
+                        : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                    }`}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
+            </div>
+          </HoverBorderGradient>
         </div>
 
-        {/* Mobile Nav Toggle */}
+        {/* Mobile toggle */}
         <div className="flex md:hidden">
-          <button
+          <HoverBorderGradient
+            as="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-3 rounded-full bg-black/60 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300"
+            containerClassName="rounded-full"
+            className="p-3 bg-black/60 rounded-full"
             aria-label="Toggle menu"
           >
-            {mobileOpen ? (
-              <X className="w-5 h-5 text-white" />
-            ) : (
-              <Menu className="w-5 h-5 text-white" />
-            )}
-          </button>
+            {mobileOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}
+          </HoverBorderGradient>
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center gap-6 md:hidden">
           {navLinks.map((link, i) => (

@@ -10,7 +10,9 @@ import {
 import { SplineScene } from "./ui/splite";
 import { Spotlight } from "./ui/spotlight";
 import { GlowingEffect } from "./ui/glowing-effect";
-import { EvervaultCard } from "./ui/evervault-card";
+import { CardPattern, generateRandomString } from "./ui/evervault-card";
+import { HoverBorderGradient } from "./ui/hover-border-gradient";
+import { useMotionValue } from "motion/react";
 import { Badge } from "../components/ui/badge";
 import { personalInfo, skills, experience, projects, education, differentiators, videoDemos } from "../data/mock";
 
@@ -47,22 +49,43 @@ const CardDecorator = () => (
   </>
 );
 
-const GlassCard = ({ children, className = "", hover = true, evervault = false }) => (
-  <div
-    className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl overflow-hidden ${
-      hover ? "hover:bg-white/[0.04] hover:border-[#034694]/30 hover:shadow-[0_8px_40px_rgba(3,70,148,0.08)]" : ""
-    } transition-all duration-500 ${className}`}
-  >
-    <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
-    <CardDecorator />
-    {evervault && (
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <EvervaultCard />
+/* GlassCard — EvervaultCard hover baked in + Chelsea blue HoverBorderGradient */
+const GlassCard = ({ children, className = "", hover = true }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const [randomString, setRandomString] = useState(() => generateRandomString(1200));
+
+  function onMouseMove({ currentTarget, clientX, clientY }) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+    setRandomString(generateRandomString(1200));
+  }
+
+  return (
+    <HoverBorderGradient
+      as="div"
+      containerClassName={`w-full rounded-2xl ${className}`}
+      className="w-full p-0 bg-transparent rounded-2xl"
+      duration={1.5}
+    >
+      <div
+        onMouseMove={onMouseMove}
+        className={`group/card relative rounded-2xl border border-white/[0.06] bg-[#050505]/80 backdrop-blur-xl overflow-hidden w-full ${
+          hover ? "hover:border-[#034694]/20 transition-all duration-500" : ""
+        }`}
+      >
+        <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
+        <CardDecorator />
+        {/* Evervault overlay */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <CardPattern mouseX={mouseX} mouseY={mouseY} randomString={randomString} />
+        </div>
+        <div className="relative z-10">{children}</div>
       </div>
-    )}
-    <div className="relative z-10">{children}</div>
-  </div>
-);
+    </HoverBorderGradient>
+  );
+};
 
 const SectionHeading = ({ label, title, subtitle }) => {
   const [ref, visible] = useReveal();

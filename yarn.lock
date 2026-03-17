@@ -1701,6 +1701,18 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@paper-design/shaders-react@^0.0.72":
+  version "0.0.72"
+  resolved "https://registry.npmjs.org/@paper-design/shaders-react/-/shaders-react-0.0.72.tgz"
+  integrity sha512-q6KwquL93ZVNcuSM7pqzW0z/VLjnDVb/NSpYyGJBxf7MEHHCXx37E+zw/Px6RZLt3SGCUerIDDCGCMT385oW0w==
+  dependencies:
+    "@paper-design/shaders" "0.0.72"
+
+"@paper-design/shaders@0.0.72":
+  version "0.0.72"
+  resolved "https://registry.npmjs.org/@paper-design/shaders/-/shaders-0.0.72.tgz"
+  integrity sha512-rk2BFuV5ood2DaivbxJC2jQMzaB434isDUzdUQ85Cy0OWnUMuxl8kyGMR74TDPyjo3EvcHIyreNLkJdRG+GfSA==
+
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.3":
   version "0.5.17"
   resolved "https://registry.npmjs.org/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.5.17.tgz"
