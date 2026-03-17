@@ -9,8 +9,7 @@ import {
 } from "lucide-react";
 import { SplineScene } from "./ui/splite";
 import { Spotlight } from "./ui/spotlight";
-import { GlowingEffect } from "./ui/glowing-effect";
-import { useMotionValue, useMotionTemplate, motion } from "motion/react";
+import { CardSpotlight } from "./ui/card-spotlight";
 import { Badge } from "../components/ui/badge";
 import { personalInfo, skills, experience, projects, education, differentiators, videoDemos } from "../data/mock";
 
@@ -37,51 +36,22 @@ const useReveal = (threshold = 0.15) => {
   return [ref, visible];
 };
 
-/* Chelsea blue corner decorator */
-const CardDecorator = () => (
-  <>
-    <span className="absolute -left-px -top-px block size-2.5 border-l-2 border-t-2 border-[#034694] rounded-tl-sm z-10" />
-    <span className="absolute -right-px -top-px block size-2.5 border-r-2 border-t-2 border-[#034694] rounded-tr-sm z-10" />
-    <span className="absolute -bottom-px -left-px block size-2.5 border-b-2 border-l-2 border-[#034694] rounded-bl-sm z-10" />
-    <span className="absolute -bottom-px -right-px block size-2.5 border-b-2 border-r-2 border-[#034694] rounded-br-sm z-10" />
-  </>
+/* GlassCard = CardSpotlight — Chelsea blue canvas dot reveal on hover */
+const GlassCard = ({ children, className = "" }) => (
+  <CardSpotlight className={className}>
+    {children}
+  </CardSpotlight>
 );
 
-/* Subtle Chelsea blue spotlight that follows the mouse — never obscures text */
-const CardShimmer = ({ mouseX, mouseY }) => {
-  const maskImage = useMotionTemplate`radial-gradient(220px at ${mouseX}px ${mouseY}px, rgba(3,70,148,0.18), transparent)`;
-  return (
-    <motion.div
-      className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300 opacity-0 group-hover/card:opacity-100"
-      style={{ background: maskImage }}
-    />
-  );
-};
-
-const GlassCard = ({ children, className = "", hover = true }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function onMouseMove({ currentTarget, clientX, clientY }) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
-  return (
-    <div
-      onMouseMove={onMouseMove}
-      className={`group/card relative rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl overflow-hidden ${
-        hover ? "hover:border-[#034694]/30 hover:shadow-[0_8px_40px_rgba(3,70,148,0.07)] transition-all duration-500" : ""
-      } ${className}`}
-    >
-      <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
-      <CardDecorator />
-      <CardShimmer mouseX={mouseX} mouseY={mouseY} />
-      <div className="relative z-10">{children}</div>
-    </div>
-  );
-};
+/* Also expose CardDecorator for the AI tools mini-cards */
+const CardDecorator = () => (
+  <>
+    <span className="absolute -left-px -top-px block size-2.5 border-l-2 border-t-2 border-[#034694] z-10 pointer-events-none" />
+    <span className="absolute -right-px -top-px block size-2.5 border-r-2 border-t-2 border-[#034694] z-10 pointer-events-none" />
+    <span className="absolute -bottom-px -left-px block size-2.5 border-b-2 border-l-2 border-[#034694] z-10 pointer-events-none" />
+    <span className="absolute -bottom-px -right-px block size-2.5 border-b-2 border-r-2 border-[#034694] z-10 pointer-events-none" />
+  </>
+);
 
 const SectionHeading = ({ label, title, subtitle }) => {
   const [ref, visible] = useReveal();
