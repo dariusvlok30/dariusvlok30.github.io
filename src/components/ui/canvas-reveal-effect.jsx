@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 export const CanvasRevealEffect = ({
-  animationSpeed = 5,
+  animationSpeed = 3,
   containerClassName,
   colors = [[3, 70, 148]],
-  dotSize = 3,
-  opacities = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1],
+  dotSize = 2,
+  opacities = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.5],
 }) => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -23,7 +23,7 @@ export const CanvasRevealEffect = ({
       canvas.height = canvas.offsetHeight;
       startTimeRef.current = Date.now();
 
-      const spacing = dotSize * 4;
+      const spacing = dotSize * 5;
       const cols = Math.ceil(canvas.width / spacing);
       const rows = Math.ceil(canvas.height / spacing);
       dotsRef.current = [];
@@ -35,7 +35,7 @@ export const CanvasRevealEffect = ({
             y: j * spacing + spacing / 2,
             color: colors[Math.floor(Math.random() * colors.length)],
             targetOpacity: opacities[Math.floor(Math.random() * opacities.length)],
-            delay: Math.random() * 1.5,
+            delay: Math.random() * 2,
           });
         }
       }
@@ -48,7 +48,7 @@ export const CanvasRevealEffect = ({
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
 
       dotsRef.current.forEach((dot) => {
-        const progress = Math.max(0, (elapsed - dot.delay) * animationSpeed * 0.4);
+        const progress = Math.max(0, (elapsed - dot.delay) * animationSpeed * 0.3);
         const opacity = Math.min(dot.targetOpacity, progress);
         const [r, g, b] = dot.color;
         ctx.beginPath();

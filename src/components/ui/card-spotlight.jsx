@@ -3,16 +3,15 @@ import React, { useState } from "react";
 import { CanvasRevealEffect } from "./canvas-reveal-effect";
 import { cn } from "@/lib/utils";
 
-// Chelsea blue particle colors
 const CHELSEA_COLORS = [
-  [3, 70, 148],   // #034694
-  [26, 92, 176],  // #1a5cb0
-  [10, 64, 128],  // mid-blue
+  [3, 70, 148],
+  [26, 92, 176],
+  [10, 64, 128],
 ];
 
 export const CardSpotlight = ({
   children,
-  radius = 320,
+  radius = 350,
   className,
   ...props
 }) => {
@@ -31,7 +30,7 @@ export const CardSpotlight = ({
   return (
     <div
       className={cn(
-        "group/spotlight relative border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl rounded-2xl overflow-hidden",
+        "group/spotlight relative border border-white/[0.08] bg-[#080c14]/80 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#034694]/30",
         className
       )}
       onMouseMove={handleMouseMove}
@@ -39,28 +38,28 @@ export const CardSpotlight = ({
       onMouseLeave={() => setIsHovering(false)}
       {...props}
     >
-      {/* Chelsea blue spotlight reveal */}
+      {/* Subtle spotlight glow on hover */}
       <motion.div
-        className="pointer-events-none absolute z-0 -inset-px rounded-2xl opacity-0 transition-opacity duration-300 group-hover/spotlight:opacity-100"
-        style={{ maskImage, WebkitMaskImage: maskImage, backgroundColor: "#020d1f" }}
+        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500 group-hover/spotlight:opacity-100"
+        style={{ maskImage, WebkitMaskImage: maskImage, backgroundColor: "rgba(3, 70, 148, 0.06)" }}
       >
         {isHovering && (
           <CanvasRevealEffect
-            animationSpeed={4}
+            animationSpeed={3}
             containerClassName="absolute inset-0"
             colors={CHELSEA_COLORS}
-            dotSize={2.5}
+            dotSize={1.5}
           />
         )}
       </motion.div>
 
-      {/* Chelsea blue corner decorators */}
-      <span className="absolute -left-px -top-px block size-2.5 border-l-2 border-t-2 border-[#034694] z-20 pointer-events-none" />
-      <span className="absolute -right-px -top-px block size-2.5 border-r-2 border-t-2 border-[#034694] z-20 pointer-events-none" />
-      <span className="absolute -bottom-px -left-px block size-2.5 border-b-2 border-l-2 border-[#034694] z-20 pointer-events-none" />
-      <span className="absolute -bottom-px -right-px block size-2.5 border-b-2 border-r-2 border-[#034694] z-20 pointer-events-none" />
+      {/* Corner decorators */}
+      <span className="absolute -left-px -top-px block size-2 border-l-2 border-t-2 border-[#034694]/50 z-20 pointer-events-none" />
+      <span className="absolute -right-px -top-px block size-2 border-r-2 border-t-2 border-[#034694]/50 z-20 pointer-events-none" />
+      <span className="absolute -bottom-px -left-px block size-2 border-b-2 border-l-2 border-[#034694]/50 z-20 pointer-events-none" />
+      <span className="absolute -bottom-px -right-px block size-2 border-b-2 border-r-2 border-[#034694]/50 z-20 pointer-events-none" />
 
-      {/* Content always on top */}
+      {/* Content always fully readable */}
       <div className="relative z-10">
         {children}
       </div>
