@@ -7,7 +7,6 @@ const navLinks = [
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
-  { label: "AI", href: "#ai" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -114,9 +113,6 @@ const Navbar = () => {
                   }`}
                 >
                   {link.label}
-                  {link.label === "AI" && (
-                    <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#034694] animate-pulse" />
-                  )}
                 </a>
               );
             })}

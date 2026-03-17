@@ -10,7 +10,6 @@ import {
   VideoDemosSection,
   EducationSection,
   ContactSection,
-  AISection,
   Footer,
 } from "./components/ContentSections";
 
@@ -24,7 +23,6 @@ function App() {
         <SkillsSection />
         <ExperienceSection />
         <ProjectsSection />
-        <AISection />
         <VideoDemosSection />
         <EducationSection />
         <ContactSection />

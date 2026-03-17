@@ -10,6 +10,7 @@ import {
 import { SplineScene } from "./ui/splite";
 import { Spotlight } from "./ui/spotlight";
 import { GlowingEffect } from "./ui/glowing-effect";
+import { EvervaultCard } from "./ui/evervault-card";
 import { Badge } from "../components/ui/badge";
 import { personalInfo, skills, experience, projects, education, differentiators, videoDemos } from "../data/mock";
 
@@ -36,14 +37,30 @@ const useReveal = (threshold = 0.15) => {
   return [ref, visible];
 };
 
-const GlassCard = ({ children, className = "", hover = true }) => (
+/* Chelsea blue corner decorator */
+const CardDecorator = () => (
+  <>
+    <span className="absolute -left-px -top-px block size-2.5 border-l-2 border-t-2 border-[#034694] rounded-tl-sm z-10" />
+    <span className="absolute -right-px -top-px block size-2.5 border-r-2 border-t-2 border-[#034694] rounded-tr-sm z-10" />
+    <span className="absolute -bottom-px -left-px block size-2.5 border-b-2 border-l-2 border-[#034694] rounded-bl-sm z-10" />
+    <span className="absolute -bottom-px -right-px block size-2.5 border-b-2 border-r-2 border-[#034694] rounded-br-sm z-10" />
+  </>
+);
+
+const GlassCard = ({ children, className = "", hover = true, evervault = false }) => (
   <div
-    className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl ${
-      hover ? "hover:bg-white/[0.04] hover:border-white/[0.1] hover:shadow-[0_8px_40px_rgba(255,255,255,0.03)]" : ""
+    className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl overflow-hidden ${
+      hover ? "hover:bg-white/[0.04] hover:border-[#034694]/30 hover:shadow-[0_8px_40px_rgba(3,70,148,0.08)]" : ""
     } transition-all duration-500 ${className}`}
   >
     <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
-    {children}
+    <CardDecorator />
+    {evervault && (
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <EvervaultCard />
+      </div>
+    )}
+    <div className="relative z-10">{children}</div>
   </div>
 );
 
@@ -60,48 +77,113 @@ const SectionHeading = ({ label, title, subtitle }) => {
   );
 };
 
-/* ============ ABOUT ============ */
+/* ============ ABOUT + AI (combined) ============ */
+const aiTools = [
+  { name: "Claude Code", desc: "Autonomous CLI agent — scaffolds, refactors, debugs entire codebases" },
+  { name: "Claude in VS Code", desc: "Inline AI pair-programming directly inside the editor" },
+  { name: "Claude API", desc: "Custom AI agents, pipelines, and intelligent automations" },
+  { name: "AI Workflows", desc: "End-to-end automated development & deployment pipelines" },
+];
+
 export const AboutSection = () => {
-  const [ref, visible] = useReveal();
+  const [statsRef, statsVisible] = useReveal();
+  const [diffRef, diffVisible] = useReveal();
+
   return (
-    <section id="about" className="py-32 px-6">
-      <div className="max-w-6xl mx-auto">
-        <SectionHeading label="01 — About" title="Who I Am" subtitle={personalInfo.summary} />
-        <div
-          ref={ref}
-          className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        >
-          {personalInfo.stats.map((stat, i) => (
-            <GlassCard key={i} className="p-6 text-center group">
-              <div className="text-3xl sm:text-4xl font-bold text-white mb-1 group-hover:scale-105 transition-transform duration-300">
-                {stat.value}
+    <section id="about">
+
+      {/* ── AI HERO BLOCK (full screen) ── */}
+      <div className="relative min-h-screen flex flex-col lg:flex-row overflow-hidden border-b border-white/[0.04]">
+        {/* Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div style={{ background: "radial-gradient(ellipse 70% 60% at 70% 50%, rgba(3,70,148,0.14), transparent)" }} className="absolute inset-0" />
+          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
+        </div>
+        <Spotlight className="-top-40 left-0 md:left-40 md:-top-20" fill="white" />
+
+        {/* Left — content */}
+        <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-20 pt-32 pb-16 lg:py-0 relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#034694]/20 border border-[#034694]/30 mb-8 w-fit">
+            <Bot className="w-3.5 h-3.5 text-[#4a90d9]" />
+            <span className="text-xs text-[#4a90d9] font-mono tracking-wider uppercase">AI-First Engineer</span>
+          </div>
+
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+            Built with <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-[#4a90d9]">
+              Intelligent Tools
+            </span>
+          </h2>
+
+          <p className="text-white/40 text-base leading-relaxed mb-10 max-w-lg">
+            {personalInfo.summary}
+          </p>
+
+          {/* AI tools grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+            {aiTools.map((tool) => (
+              <div
+                key={tool.name}
+                className="group relative p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-[#034694]/10 hover:border-[#034694]/30 transition-all duration-300 overflow-hidden"
+              >
+                <CardDecorator />
+                <span className="text-sm font-semibold text-white/80 block mb-1">{tool.name}</span>
+                <span className="text-xs text-white/30">{tool.desc}</span>
               </div>
-              <div className="text-sm font-medium text-white/50 mb-1">{stat.label}</div>
-              <div className="text-xs text-white/25">{stat.description}</div>
-            </GlassCard>
-          ))}
+            ))}
+          </div>
+
+          {/* Stats row */}
+          <div
+            ref={statsRef}
+            className={`grid grid-cols-2 sm:grid-cols-4 gap-4 transition-all duration-700 ${statsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          >
+            {personalInfo.stats.map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl font-bold text-white mb-0.5">{stat.value}</div>
+                <div className="text-xs text-white/40">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Differentiators */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-12">
-          {differentiators.map((item, i) => {
-            const Icon = iconMap[item.icon] || Sparkles;
-            return (
-              <GlassCard key={i} className="p-6 group">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.08] transition-colors duration-300">
-                    <Icon className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-white/80 mb-1">{item.title}</h4>
-                    <p className="text-xs text-white/30 leading-relaxed">{item.description}</p>
-                  </div>
-                </div>
-              </GlassCard>
-            );
-          })}
+        {/* Right — Spline robot full height */}
+        <div className="flex-1 relative min-h-[50vh] lg:min-h-screen">
+          <SplineScene
+            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+            className="w-full h-full"
+          />
         </div>
       </div>
+
+      {/* ── DIFFERENTIATORS ── */}
+      <div className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <SectionHeading label="01 — About" title="Why I'm Different" subtitle="What sets my approach to engineering apart." />
+          <div
+            ref={diffRef}
+            className={`grid sm:grid-cols-2 lg:grid-cols-3 gap-5 transition-all duration-700 ${diffVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          >
+            {differentiators.map((item, i) => {
+              const Icon = iconMap[item.icon] || Sparkles;
+              return (
+                <GlassCard key={i} className="p-6 group" evervault={false}>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-[#034694]/10 border border-[#034694]/20 flex items-center justify-center flex-shrink-0 group-hover:bg-[#034694]/20 transition-colors duration-300">
+                      <Icon className="w-5 h-5 text-[#4a90d9]/60 group-hover:text-[#4a90d9] transition-colors duration-300" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-white/80 mb-1.5">{item.title}</h4>
+                      <p className="text-xs text-white/30 leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
     </section>
   );
 };
@@ -123,8 +205,8 @@ export const SkillsSection = () => {
             return (
               <GlassCard key={i} className="p-6 group">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center group-hover:bg-white/[0.08] transition-colors duration-300">
-                    <Icon className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors duration-300" />
+                  <div className="w-9 h-9 rounded-lg bg-[#034694]/10 border border-[#034694]/20 flex items-center justify-center group-hover:bg-[#034694]/20 transition-colors duration-300">
+                    <Icon className="w-4 h-4 text-[#4a90d9]/60 group-hover:text-[#4a90d9] transition-colors duration-300" />
                   </div>
                   <h3 className="text-sm font-semibold text-white/70">{cat.name}</h3>
                 </div>
@@ -137,7 +219,7 @@ export const SkillsSection = () => {
                       </div>
                       <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-white/20 to-white/40 transition-all duration-1000 ease-out"
+                          className="h-full rounded-full bg-gradient-to-r from-[#034694] to-[#2468c0] transition-all duration-1000 ease-out"
                           style={{ width: visible ? `${skill.level}%` : "0%" }}
                         />
                       </div>
@@ -452,69 +534,6 @@ export const ContactSection = () => {
               </div>
             </div>
           </GlassCard>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-/* ============ AI SECTION ============ */
-export const AISection = () => {
-  const [ref, visible] = useReveal();
-
-  const tools = [
-    { name: "Claude Code", desc: "AI-powered CLI for autonomous coding tasks" },
-    { name: "Cursor AI", desc: "AI-first IDE with deep codebase understanding" },
-    { name: "Claude API", desc: "Custom AI agents & intelligent automations" },
-    { name: "AI Workflows", desc: "End-to-end automated development pipelines" },
-  ];
-
-  return (
-    <section id="ai" className="relative py-32 px-6 overflow-hidden">
-      <div ref={ref} className={`max-w-7xl mx-auto transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <SectionHeading
-          label="AI-Augmented Development"
-          title="Building with AI"
-          subtitle="Leveraging cutting-edge AI tools to ship faster, smarter, and better."
-        />
-
-        {/* Card with Spotlight + Spline robot */}
-        <div className="relative w-full h-[520px] rounded-2xl bg-black/[0.96] overflow-hidden border border-white/[0.06]">
-          <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
-
-          <div className="flex h-full">
-            {/* Left: content */}
-            <div className="flex-1 p-10 relative z-10 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#034694]/20 border border-[#034694]/30 mb-6 w-fit">
-                <Bot className="w-3.5 h-3.5 text-[#4a90d9]" />
-                <span className="text-xs text-[#4a90d9] font-mono tracking-wider uppercase">AI-First Workflow</span>
-              </div>
-
-              <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 mb-4">
-                Shipped with<br />Intelligent Tools
-              </h2>
-              <p className="text-neutral-400 max-w-sm mb-8 text-sm leading-relaxed">
-                Every project built using AI-augmented workflows — from architecture to deployment. Using Claude Code, Cursor, and custom AI agents to multiply output quality and speed.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {tools.map((tool) => (
-                  <div key={tool.name} className="flex flex-col gap-1 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors duration-300">
-                    <span className="text-sm font-semibold text-white/80">{tool.name}</span>
-                    <span className="text-xs text-white/30">{tool.desc}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: Spline robot */}
-            <div className="flex-1 relative hidden md:block">
-              <SplineScene
-                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                className="w-full h-full"
-              />
-            </div>
-          </div>
         </div>
       </div>
     </section>
