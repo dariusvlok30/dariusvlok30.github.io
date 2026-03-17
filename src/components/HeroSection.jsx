@@ -83,9 +83,9 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-4">
-          {/* Left — text */}
-          <div className="flex-1 text-center lg:text-left pt-20 lg:pt-0">
+        <div className="flex flex-col items-center">
+          {/* Text — centered */}
+          <div className="w-full max-w-3xl text-center pt-20 lg:pt-0">
             {/* Status badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.06] border border-white/[0.12] backdrop-blur-sm mb-8 animate-fade-in-up">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -121,7 +121,7 @@ const HeroSection = () => {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-10 animate-fade-in-up animation-delay-500">
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-10 animate-fade-in-up animation-delay-500">
               <a
                 href="#projects"
                 onClick={(e) => {
@@ -145,7 +145,7 @@ const HeroSection = () => {
             </div>
 
             {/* Location + socials */}
-            <div className="flex items-center justify-center lg:justify-start gap-6 text-white/30 text-sm animate-fade-in-up animation-delay-600">
+            <div className="flex items-center justify-center gap-6 text-white/30 text-sm animate-fade-in-up animation-delay-600">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" />
                 {personalInfo.location}
@@ -163,19 +163,6 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right — cartoon character */}
-          <div className="flex-1 flex items-center justify-center lg:justify-end animate-fade-in-up animation-delay-300">
-            <div className="relative">
-              {/* Glow behind character */}
-              <div className="absolute inset-0 bg-[#034694]/20 rounded-full blur-[80px] scale-75" />
-              <div className="absolute inset-0 bg-[#1a5cb0]/10 rounded-full blur-[120px] scale-90" />
-              <img
-                src={`${process.env.PUBLIC_URL}/darius-cartoon.png`}
-                alt="Darius Vlok"
-                className="relative z-10 w-72 sm:w-80 lg:w-[420px] drop-shadow-[0_0_60px_rgba(3,70,148,0.3)]"
-              />
-            </div>
-          </div>
         </div>
       </div>
 
