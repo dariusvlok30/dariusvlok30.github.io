@@ -7,6 +7,9 @@ import {
   GraduationCap, Terminal, Heart,
   Monitor, Cog,
 } from "lucide-react";
+import { SplineScene } from "./ui/splite";
+import { Spotlight } from "./ui/spotlight";
+import { GlowingEffect } from "./ui/glowing-effect";
 import { Badge } from "../components/ui/badge";
 import { personalInfo, skills, experience, projects, education, differentiators, videoDemos } from "../data/mock";
 
@@ -39,6 +42,7 @@ const GlassCard = ({ children, className = "", hover = true }) => (
       hover ? "hover:bg-white/[0.04] hover:border-white/[0.1] hover:shadow-[0_8px_40px_rgba(255,255,255,0.03)]" : ""
     } transition-all duration-500 ${className}`}
   >
+    <GlowingEffect disabled={false} spread={30} proximity={60} borderWidth={1.5} />
     {children}
   </div>
 );
@@ -448,6 +452,69 @@ export const ContactSection = () => {
               </div>
             </div>
           </GlassCard>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ============ AI SECTION ============ */
+export const AISection = () => {
+  const [ref, visible] = useReveal();
+
+  const tools = [
+    { name: "Claude Code", desc: "AI-powered CLI for autonomous coding tasks" },
+    { name: "Cursor AI", desc: "AI-first IDE with deep codebase understanding" },
+    { name: "Claude API", desc: "Custom AI agents & intelligent automations" },
+    { name: "AI Workflows", desc: "End-to-end automated development pipelines" },
+  ];
+
+  return (
+    <section id="ai" className="relative py-32 px-6 overflow-hidden">
+      <div ref={ref} className={`max-w-7xl mx-auto transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <SectionHeading
+          label="AI-Augmented Development"
+          title="Building with AI"
+          subtitle="Leveraging cutting-edge AI tools to ship faster, smarter, and better."
+        />
+
+        {/* Card with Spotlight + Spline robot */}
+        <div className="relative w-full h-[520px] rounded-2xl bg-black/[0.96] overflow-hidden border border-white/[0.06]">
+          <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
+
+          <div className="flex h-full">
+            {/* Left: content */}
+            <div className="flex-1 p-10 relative z-10 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#034694]/20 border border-[#034694]/30 mb-6 w-fit">
+                <Bot className="w-3.5 h-3.5 text-[#4a90d9]" />
+                <span className="text-xs text-[#4a90d9] font-mono tracking-wider uppercase">AI-First Workflow</span>
+              </div>
+
+              <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 mb-4">
+                Shipped with<br />Intelligent Tools
+              </h2>
+              <p className="text-neutral-400 max-w-sm mb-8 text-sm leading-relaxed">
+                Every project built using AI-augmented workflows — from architecture to deployment. Using Claude Code, Cursor, and custom AI agents to multiply output quality and speed.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {tools.map((tool) => (
+                  <div key={tool.name} className="flex flex-col gap-1 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors duration-300">
+                    <span className="text-sm font-semibold text-white/80">{tool.name}</span>
+                    <span className="text-xs text-white/30">{tool.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Spline robot */}
+            <div className="flex-1 relative hidden md:block">
+              <SplineScene
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, Terminal } from "lucide-react";
+import { GlassFilter } from "./ui/button";
 
 const navLinks = [
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
+  { label: "AI", href: "#ai" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -18,7 +20,6 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
 
-      // If near the bottom of the page, always highlight Contact
       const nearBottom =
         window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
       if (nearBottom) {
@@ -54,50 +55,72 @@ const Navbar = () => {
 
   return (
     <>
+      {/* Render the glass filter once for the whole navbar */}
+      <GlassFilter id="nav-glass" />
+
       <nav
         className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
           scrolled ? "top-4" : "top-6"
         }`}
       >
-        {/* Desktop Nav - Floating Bubble */}
-        <div
-          className={`hidden md:flex items-center gap-1 px-2 py-2 rounded-full border transition-all duration-500 ${
-            scrolled
-              ? "bg-black/60 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-              : "bg-white/[0.03] backdrop-blur-xl border-white/[0.06]"
-          }`}
-        >
-          <a
-            href="#hero"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="flex items-center gap-2 px-4 py-2 mr-2 rounded-full hover:bg-white/[0.06] transition-colors duration-300"
-          >
-            <Terminal className="w-4 h-4 text-white/70" />
-            <span className="text-sm font-semibold text-white tracking-wide font-mono">DV</span>
-          </a>
+        {/* Desktop Nav - Liquid Glass Bubble */}
+        <div className="hidden md:block relative">
+          {/* Glass distortion layer */}
+          <div
+            className="absolute inset-0 rounded-full -z-10 overflow-hidden"
+            style={{ backdropFilter: 'url("#nav-glass") blur(12px)' }}
+          />
+          {/* Glass surface */}
+          <div
+            className={`absolute inset-0 rounded-full -z-10 transition-all duration-500 ${
+              scrolled
+                ? "shadow-[0_0_6px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3px_rgba(255,255,255,0.12),inset_-3px_-3px_0.5px_-3px_rgba(255,255,255,0.08),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.3),inset_-1px_-1px_1px_-0.5px_rgba(255,255,255,0.2),inset_0_0_6px_6px_rgba(255,255,255,0.04),0_0_12px_rgba(0,0,0,0.15)] bg-white/[0.06]"
+                : "shadow-[0_0_6px_rgba(0,0,0,0.02),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.2),inset_0_0_6px_6px_rgba(255,255,255,0.02)] bg-white/[0.03]"
+            }`}
+          />
+          {/* Border */}
+          <div
+            className={`absolute inset-0 rounded-full -z-10 border transition-all duration-500 ${
+              scrolled ? "border-white/15" : "border-white/[0.06]"
+            }`}
+          />
 
-          <div className="w-px h-5 bg-white/10 mr-1" />
+          <div className="flex items-center gap-1 px-2 py-2 rounded-full">
+            <a
+              href="#hero"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="flex items-center gap-2 px-4 py-2 mr-2 rounded-full hover:bg-white/[0.08] transition-colors duration-300"
+            >
+              <Terminal className="w-4 h-4 text-white/70" />
+              <span className="text-sm font-semibold text-white tracking-wide font-mono">DV</span>
+            </a>
 
-          {navLinks.map((link) => {
-            const isActive = activeSection === link.href.replace("#", "");
-            return (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleClick(e, link.href)}
-                className={`relative px-4 py-2 text-sm rounded-full transition-all duration-300 ${
-                  isActive
-                    ? "text-white bg-white/10"
-                    : "text-white/50 hover:text-white hover:bg-white/[0.04]"
-                }`}
-              >
-                {link.label}
-              </a>
-            );
-          })}
+            <div className="w-px h-5 bg-white/10 mr-1" />
+
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href.replace("#", "");
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleClick(e, link.href)}
+                  className={`relative px-4 py-2 text-sm rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "text-white bg-white/10"
+                      : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                  }`}
+                >
+                  {link.label}
+                  {link.label === "AI" && (
+                    <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#034694] animate-pulse" />
+                  )}
+                </a>
+              );
+            })}
+          </div>
         </div>
 
         {/* Mobile Nav Toggle */}
