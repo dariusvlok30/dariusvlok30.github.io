@@ -62,7 +62,7 @@ const HeroSection = () => (
         scale={1.2}
         rotation={0}
         speed={0.6}
-        colors={["#ffffff", "#f8f8f8", "#dc2626", "#ffffff"]}
+        colors={["#080808", "#1a0000", "#dc2626", "#0a0a0a"]}
       />
     </div>
 
@@ -108,13 +108,13 @@ const HeroSection = () => (
         style={{ border: "1px solid rgba(220,38,38,0.3)", background: "rgba(220,38,38,0.08)" }}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-red-700/70">
+        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-red-400/70">
           Available for opportunities
         </span>
       </div>
 
       {/* Hi label */}
-      <p className="text-xs font-mono tracking-[0.3em] uppercase text-gray-400 mb-1">
+      <p className="text-xs font-mono tracking-[0.3em] uppercase text-white/25 mb-1">
         Hi, I'm
       </p>
 
@@ -126,7 +126,7 @@ const HeroSection = () => (
             fontSize: "clamp(5rem, 11vw, 10rem)",
             lineHeight: 0.9,
             letterSpacing: "-0.02em",
-            color: "#0a0a0a",
+            color: "#f0f0f0",
             fontWeight: 900,
           }}
         >
@@ -147,13 +147,13 @@ const HeroSection = () => (
       </div>
 
       {/* Role typewriter */}
-      <div className="text-sm sm:text-base text-gray-500 font-mono mb-4 h-6">
+      <div className="text-sm sm:text-base text-white/40 font-mono mb-4 h-6">
         <TypeWriter words={ROLES} />
       </div>
 
       {/* Tagline */}
       <p
-        className="text-sm text-gray-400 italic pl-4 mb-10 max-w-sm leading-relaxed"
+        className="text-sm text-white/30 italic pl-4 mb-10 max-w-sm leading-relaxed"
         style={{ borderLeft: "2px solid rgba(220,38,38,0.5)" }}
       >
         Racing through development with AI
@@ -174,8 +174,8 @@ const HeroSection = () => (
         </a>
         <a
           href={`mailto:${personalInfo.email}`}
-          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-medium text-sm text-gray-700 hover:text-gray-900 transition-all duration-300"
-          style={{ border: "1px solid rgba(0,0,0,0.15)", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)" }}
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-medium text-sm text-white/60 hover:text-white transition-all duration-300"
+          style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)", backdropFilter: "blur(8px)" }}
         >
           <Mail className="w-4 h-4" />
           Get in Touch
@@ -183,17 +183,17 @@ const HeroSection = () => (
       </div>
 
       {/* Meta row */}
-      <div className="flex items-center gap-5 text-xs text-gray-400">
+      <div className="flex items-center gap-5 text-xs text-white/25">
         <span className="flex items-center gap-1.5">
           <MapPin className="w-3 h-3 text-red-600/60" />
           {personalInfo.location}
         </span>
-        <span className="w-px h-3 bg-gray-300" />
+        <span className="w-px h-3 bg-white/10" />
         <a
           href={personalInfo.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 hover:text-red-600 transition-colors duration-300"
+          className="flex items-center gap-1.5 hover:text-red-400 transition-colors duration-300"
         >
           <Linkedin className="w-3 h-3" />
           LinkedIn
@@ -203,7 +203,7 @@ const HeroSection = () => (
 
     {/* Scroll indicator */}
     <div className="absolute bottom-8 left-8 flex flex-col items-center gap-2" style={{ zIndex: 5 }}>
-      <span className="text-[8px] font-mono tracking-[0.35em] uppercase text-gray-400">Scroll</span>
+      <span className="text-[8px] font-mono tracking-[0.35em] uppercase text-white/20">Scroll</span>
       <div
         className="w-px h-10 bg-gradient-to-b from-red-600/50 to-transparent"
         style={{ animation: "scrollPulse 2s ease-in-out infinite" }}

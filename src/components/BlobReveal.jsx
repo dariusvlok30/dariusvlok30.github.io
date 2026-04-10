@@ -9,8 +9,8 @@ import { useEffect, useRef, useCallback } from "react";
 export default function BlobReveal({
   baseImageUrl,
   revealImageUrl,
-  blobRadius = 0.038,  // slightly bigger than cursor, still a precise peephole
-  fadeSpeed  = 4.5,    // fades in ~0.6s after cursor leaves
+  blobRadius = 0.076,
+  fadeSpeed  = 4.5,
   style      = {},
 }) {
   const canvasRef = useRef(null);
@@ -118,11 +118,11 @@ export default function BlobReveal({
       const R     = SHORT * blobRadius;
       const mask  = st.maskData;
 
-      // Decay — fades out when not hovering
+      // Decay — fades out when cursor leaves
       const decay = Math.exp(-fadeSpeed * dt);
       for (let i = 0; i < mask.length; i++) mask[i] *= decay;
 
-      // Only stamp when cursor is actively over the canvas
+      // Stamp blob only while cursor is over the portrait
       if (st.active && st.mouse.x >= 0) {
         stamp(mask, W, H, st.mouse.x * W, st.mouse.y * H, R, st.time);
       }
@@ -185,7 +185,9 @@ export default function BlobReveal({
     stateRef.current.active = true;
   }, []);
 
-  const onTouchEnd = useCallback(() => { stateRef.current.active = false; }, []);
+  const onTouchEnd = useCallback(() => {
+    stateRef.current.active = false;
+  }, []);
 
   return (
     <canvas
