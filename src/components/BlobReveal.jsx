@@ -2,16 +2,15 @@ import { useEffect, useRef, useCallback } from "react";
 
 /**
  * BlobReveal
- * - Auto-drift: tiny blob traces a Lissajous path when cursor is away,
- *   continuously revealing the helmet underneath as it wanders.
- * - Hover: same tiny blob follows cursor for precise on-demand reveal.
- * - No intro animation — pure interaction.
+ * - Hover over the portrait → small organic blob reveals the helmet underneath
+ * - Move cursor away → reveal fades out quickly
+ * - No auto-drift, no intro — pure intentional interaction
  */
 export default function BlobReveal({
   baseImageUrl,
   revealImageUrl,
-  blobRadius = 0.016,  // ~4–5mm — truly tiny peephole
-  fadeSpeed  = 5.5,    // fast decay so trail is very short
+  blobRadius = 0.038,  // slightly bigger than cursor, still a precise peephole
+  fadeSpeed  = 4.5,    // fades in ~0.6s after cursor leaves
   style      = {},
 }) {
   const canvasRef = useRef(null);
@@ -52,54 +51,43 @@ export default function BlobReveal({
     const ro = new ResizeObserver(resize);
     ro.observe(canvas.parentElement || canvas);
 
-    // ── Noisy organic shape for cursor blob ──────────────────────────────────
+    // ── Organic noise for cursor blob shape ──────────────────────────────────
     const noise = (theta, t) =>
       1
-      + Math.sin(theta * 3  + t * 0.7)  * 0.10
-      + Math.cos(theta * 7  + t * 1.1)  * 0.06
-      + Math.sin(theta * 11 + t * 0.4)  * 0.04
-      + Math.cos(theta * 2  - t * 0.9)  * 0.05;
+      + Math.sin(theta * 3  + t * 0.8)  * 0.08
+      + Math.cos(theta * 5  + t * 1.2)  * 0.05
+      + Math.sin(theta * 9  + t * 0.5)  * 0.03;
 
-    // ── Stamp a blob into the Float32 mask ───────────────────────────────────
-    function stamp(mask, W, H, cx, cy, R, organic, t) {
-      const bound = R * (organic ? 1.25 : 1.0);
-      const x0 = Math.max(0, Math.floor(cx - bound));
-      const x1 = Math.min(W - 1, Math.ceil(cx + bound));
-      const y0 = Math.max(0, Math.floor(cy - bound));
-      const y1 = Math.min(H - 1, Math.ceil(cy + bound));
+    // ── Stamp organic blob at cursor position ────────────────────────────────
+    function stamp(mask, W, H, cx, cy, R, t) {
+      const outer = R * 1.2;
+      const x0 = Math.max(0, Math.floor(cx - outer));
+      const x1 = Math.min(W - 1, Math.ceil(cx + outer));
+      const y0 = Math.max(0, Math.floor(cy - outer));
+      const y1 = Math.min(H - 1, Math.ceil(cy + outer));
 
-      if (organic) {
-        const N = 48;
-        const verts = Array.from({ length: N }, (_, k) => {
-          const a = (k / N) * Math.PI * 2;
-          const r = R * noise(a, t);
-          return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
-        });
-        for (let py = y0; py <= y1; py++) {
-          for (let px = x0; px <= x1; px++) {
-            let inside = false;
-            for (let j = 0, i = N - 1; j < N; i = j++) {
-              const { x: xi, y: yi } = verts[i];
-              const { x: xj, y: yj } = verts[j];
-              if (((yi > py) !== (yj > py)) &&
-                  (px < ((xj - xi) * (py - yi)) / (yj - yi) + xi))
-                inside = !inside;
-            }
-            if (inside) {
-              const dx = px - cx, dy = py - cy;
-              const d  = Math.sqrt(dx * dx + dy * dy) / R;
-              mask[py * W + px] = Math.min(1, mask[py * W + px] + Math.max(0, 1 - d * d));
-            }
+      const N = 48;
+      const verts = Array.from({ length: N }, (_, k) => {
+        const a = (k / N) * Math.PI * 2;
+        const r = R * noise(a, t);
+        return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
+      });
+
+      for (let py = y0; py <= y1; py++) {
+        for (let px = x0; px <= x1; px++) {
+          let inside = false;
+          for (let j = 0, i = N - 1; j < N; i = j++) {
+            const { x: xi, y: yi } = verts[i];
+            const { x: xj, y: yj } = verts[j];
+            if (((yi > py) !== (yj > py)) &&
+                (px < ((xj - xi) * (py - yi)) / (yj - yi) + xi))
+              inside = !inside;
           }
-        }
-      } else {
-        // Fast circle for auto-drift
-        for (let py = y0; py <= y1; py++) {
-          for (let px = x0; px <= x1; px++) {
+          if (inside) {
             const dx = px - cx, dy = py - cy;
-            const d2 = (dx * dx + dy * dy) / (R * R);
-            if (d2 < 1)
-              mask[py * W + px] = Math.min(0.85, mask[py * W + px] + (1 - d2) * 0.55);
+            const d  = Math.sqrt(dx * dx + dy * dy) / R;
+            const a  = Math.max(0, 1 - d * d);
+            mask[py * W + px] = Math.min(1, mask[py * W + px] + a);
           }
         }
       }
@@ -130,30 +118,25 @@ export default function BlobReveal({
       const R     = SHORT * blobRadius;
       const mask  = st.maskData;
 
-      // Decay
+      // Decay — fades out when not hovering
       const decay = Math.exp(-fadeSpeed * dt);
       for (let i = 0; i < mask.length; i++) mask[i] *= decay;
 
-      // Stamp — cursor takes priority, else auto-drift
+      // Only stamp when cursor is actively over the canvas
       if (st.active && st.mouse.x >= 0) {
-        stamp(mask, W, H, st.mouse.x * W, st.mouse.y * H, R, true, st.time);
-      } else {
-        // Lissajous auto-drift (stays in the upper 80% where the subject is)
-        const cx = W * (0.50 + 0.28 * Math.sin(st.time * 0.37));
-        const cy = H * (0.38 + 0.30 * Math.cos(st.time * 0.23));
-        stamp(mask, W, H, cx, cy, R, false, st.time);
+        stamp(mask, W, H, st.mouse.x * W, st.mouse.y * H, R, st.time);
       }
 
       // Build mask image
-      const img  = maskCtx.createImageData(W, H);
-      const data = img.data;
+      const imgData = maskCtx.createImageData(W, H);
+      const d = imgData.data;
       for (let i = 0; i < mask.length; i++) {
         const a = Math.round(Math.min(255, mask[i] * 255));
         const o = i * 4;
-        data[o] = data[o + 1] = data[o + 2] = 255;
-        data[o + 3] = a;
+        d[o] = d[o + 1] = d[o + 2] = 255;
+        d[o + 3] = a;
       }
-      maskCtx.putImageData(img, 0, 0);
+      maskCtx.putImageData(imgData, 0, 0);
 
       // Composite
       ctx.clearRect(0, 0, W, H);
@@ -170,11 +153,11 @@ export default function BlobReveal({
       }
     };
 
-    loadImage(baseImageUrl)
-      .then(b => { baseImg = b; })
-      .catch(() => {});
     Promise.all([loadImage(baseImageUrl), loadImage(revealImageUrl)])
-      .then(([b, r]) => { baseImg = b; revealImg = r; rafRef.current = requestAnimationFrame(draw); })
+      .then(([b, r]) => {
+        baseImg = b; revealImg = r;
+        rafRef.current = requestAnimationFrame(draw);
+      })
       .catch(() => { rafRef.current = requestAnimationFrame(draw); });
 
     return () => {
@@ -190,7 +173,9 @@ export default function BlobReveal({
     stateRef.current.active = true;
   }, []);
 
-  const onMouseLeave = useCallback(() => { stateRef.current.active = false; }, []);
+  const onMouseLeave = useCallback(() => {
+    stateRef.current.active = false;
+  }, []);
 
   const onTouchMove = useCallback(e => {
     e.preventDefault();

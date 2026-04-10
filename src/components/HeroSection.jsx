@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Linkedin, MapPin, ArrowRight } from "lucide-react";
+import { Warp } from "@paper-design/shaders-react";
 import { personalInfo } from "../data/mock";
 import BlobReveal from "./BlobReveal";
 
@@ -35,7 +36,7 @@ const TypeWriter = ({ words, speed = 80, pause = 2000 }) => {
   return (
     <span>
       {text}
-      <span className="inline-block w-0.5 h-[1em] bg-red-500 ml-px align-middle animate-pulse" />
+      <span className="inline-block w-0.5 h-[1em] bg-red-600 ml-px align-middle animate-pulse" />
     </span>
   );
 };
@@ -45,121 +46,79 @@ const HeroSection = () => (
   <section
     id="hero"
     className="relative w-full overflow-hidden"
-    style={{ minHeight: "100svh", background: "#080808" }}
+    style={{ minHeight: "100svh" }}
   >
-    {/* ── Background atmosphere ── */}
-
-    {/* Subtle dot grid */}
-    <div
-      className="absolute inset-0 pointer-events-none"
-      style={{
-        zIndex: 1,
-        backgroundImage: "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "32px 32px",
-      }}
-    />
-
-    {/* Red glow behind the portrait */}
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        zIndex: 1,
-        right: "-5%",
-        bottom: "-10%",
-        width: "65%",
-        height: "90%",
-        background:
-          "radial-gradient(ellipse at 70% 80%, rgba(220,38,38,0.14) 0%, rgba(220,38,38,0.04) 40%, transparent 70%)",
-      }}
-    />
-
-    {/* Large faint DV monogram on far right */}
-    <div
-      className="absolute select-none pointer-events-none"
-      style={{
-        zIndex: 1,
-        right: "-2%",
-        bottom: "-4%",
-        fontSize: "clamp(16rem, 30vw, 28rem)",
-        fontFamily: "'Bebas Neue', 'Arial Black', Arial, sans-serif",
-        fontWeight: 900,
-        color: "rgba(220,38,38,0.05)",
-        lineHeight: 1,
-        letterSpacing: "-0.04em",
-      }}
-    >
-      DV
+    {/* ── Warp shader background — white + red ── */}
+    <div className="absolute inset-0" style={{ zIndex: 0 }}>
+      <Warp
+        style={{ width: "100%", height: "100%" }}
+        proportion={0.42}
+        softness={1}
+        distortion={0.18}
+        swirl={0.6}
+        swirlIterations={8}
+        shape="checks"
+        shapeScale={0.08}
+        scale={1.2}
+        rotation={0}
+        speed={0.6}
+        colors={["#ffffff", "#f8f8f8", "#dc2626", "#ffffff"]}
+      />
     </div>
+
+    {/* Subtle bottom fade into dark sections below */}
+    <div
+      className="absolute bottom-0 left-0 right-0 pointer-events-none"
+      style={{ zIndex: 1, height: "22%", background: "linear-gradient(to top, #080808 0%, transparent 100%)" }}
+    />
 
     {/* ── Portrait — right side, bottom-anchored ── */}
     <div
       className="absolute"
-      style={{
-        zIndex: 2,
-        right: "2%",
-        bottom: 0,
-        height: "95%",
-        aspectRatio: "3 / 4",
-      }}
+      style={{ zIndex: 2, right: "2%", bottom: 0, height: "95%", aspectRatio: "3 / 4" }}
     >
       <BlobReveal
         baseImageUrl="/images/portrait-main.png"
         revealImageUrl="/images/portrait-alt.png"
-        blobRadius={0.3}
-        fadeSpeed={1.8}
+        blobRadius={0.038}
+        fadeSpeed={4.5}
       />
       <p
         className="absolute left-0 right-0 text-center text-[9px] font-mono tracking-[0.25em] uppercase pointer-events-none select-none"
-        style={{ bottom: "1rem", color: "rgba(220,38,38,0.35)" }}
+        style={{ bottom: "1rem", color: "rgba(150,20,20,0.5)" }}
       >
         hover to reveal
       </p>
     </div>
 
-    {/* Soft vignette on the right edge so portrait bleeds in naturally */}
+    {/* Right edge vignette */}
     <div
       className="absolute inset-y-0 right-0 pointer-events-none"
-      style={{
-        zIndex: 3,
-        width: "18%",
-        background: "linear-gradient(to left, #080808 0%, transparent 100%)",
-      }}
-    />
-    {/* Bottom fade */}
-    <div
-      className="absolute bottom-0 left-0 right-0 pointer-events-none"
-      style={{
-        zIndex: 3,
-        height: "18%",
-        background: "linear-gradient(to top, #080808 0%, transparent 100%)",
-      }}
+      style={{ zIndex: 3, width: "15%", background: "linear-gradient(to left, #080808 0%, transparent 100%)" }}
     />
 
-    {/* ── Left column — text content ── */}
+    {/* ── Left column — text — dark on white background ── */}
     <div
       className="relative flex flex-col justify-center min-h-screen"
       style={{ zIndex: 4, maxWidth: "54%", padding: "6rem 3rem 6rem 5vw" }}
     >
-      {/* Live badge */}
+      {/* Available badge */}
       <div
         className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 w-fit"
-        style={{
-          border: "1px solid rgba(220,38,38,0.2)",
-          background: "rgba(220,38,38,0.06)",
-        }}
+        style={{ border: "1px solid rgba(220,38,38,0.3)", background: "rgba(220,38,38,0.08)" }}
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-red-400/60">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-red-700/70">
           Available for opportunities
         </span>
       </div>
 
       {/* Hi label */}
-      <p className="text-xs font-mono tracking-[0.3em] uppercase text-white/25 mb-1">
+      <p className="text-xs font-mono tracking-[0.3em] uppercase text-gray-400 mb-1">
         Hi, I'm
       </p>
 
-      {/* Name block */}
+      {/* Name */}
       <div className="mb-5">
         <h1
           style={{
@@ -167,7 +126,7 @@ const HeroSection = () => (
             fontSize: "clamp(5rem, 11vw, 10rem)",
             lineHeight: 0.9,
             letterSpacing: "-0.02em",
-            color: "#f0f0f0",
+            color: "#0a0a0a",
             fontWeight: 900,
           }}
         >
@@ -188,19 +147,19 @@ const HeroSection = () => (
       </div>
 
       {/* Role typewriter */}
-      <div className="text-sm sm:text-base text-white/35 font-mono mb-4 h-6">
+      <div className="text-sm sm:text-base text-gray-500 font-mono mb-4 h-6">
         <TypeWriter words={ROLES} />
       </div>
 
       {/* Tagline */}
       <p
-        className="text-sm text-white/25 italic pl-4 mb-10 max-w-sm leading-relaxed"
-        style={{ borderLeft: "2px solid rgba(220,38,38,0.4)" }}
+        className="text-sm text-gray-400 italic pl-4 mb-10 max-w-sm leading-relaxed"
+        style={{ borderLeft: "2px solid rgba(220,38,38,0.5)" }}
       >
         Racing through development with AI
       </p>
 
-      {/* CTA buttons */}
+      {/* CTAs */}
       <div className="flex flex-wrap gap-3 mb-10">
         <a
           href="#projects"
@@ -208,19 +167,15 @@ const HeroSection = () => (
             e.preventDefault();
             document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-red-600 text-white font-semibold text-sm hover:bg-red-500 transition-all duration-300"
-          style={{ boxShadow: "0 0 0 1px rgba(220,38,38,0.3)" }}
+          className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-red-600 text-white font-semibold text-sm hover:bg-red-500 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(220,38,38,0.4)]"
         >
           View Projects
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
         </a>
         <a
           href={`mailto:${personalInfo.email}`}
-          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-medium text-sm text-white/60 hover:text-white transition-all duration-300"
-          style={{
-            border: "1px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.04)",
-          }}
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-medium text-sm text-gray-700 hover:text-gray-900 transition-all duration-300"
+          style={{ border: "1px solid rgba(0,0,0,0.15)", background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)" }}
         >
           <Mail className="w-4 h-4" />
           Get in Touch
@@ -228,17 +183,17 @@ const HeroSection = () => (
       </div>
 
       {/* Meta row */}
-      <div className="flex items-center gap-5 text-xs text-white/25">
+      <div className="flex items-center gap-5 text-xs text-gray-400">
         <span className="flex items-center gap-1.5">
-          <MapPin className="w-3 h-3 text-red-600/50" />
+          <MapPin className="w-3 h-3 text-red-600/60" />
           {personalInfo.location}
         </span>
-        <span className="w-px h-3 bg-white/10" />
+        <span className="w-px h-3 bg-gray-300" />
         <a
           href={personalInfo.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 hover:text-red-400 transition-colors duration-300"
+          className="flex items-center gap-1.5 hover:text-red-600 transition-colors duration-300"
         >
           <Linkedin className="w-3 h-3" />
           LinkedIn
@@ -246,14 +201,11 @@ const HeroSection = () => (
       </div>
     </div>
 
-    {/* ── Scroll indicator ── */}
-    <div
-      className="absolute bottom-8 left-8 flex flex-col items-center gap-2"
-      style={{ zIndex: 5 }}
-    >
-      <span className="text-[8px] font-mono tracking-[0.35em] uppercase text-white/15">Scroll</span>
+    {/* Scroll indicator */}
+    <div className="absolute bottom-8 left-8 flex flex-col items-center gap-2" style={{ zIndex: 5 }}>
+      <span className="text-[8px] font-mono tracking-[0.35em] uppercase text-gray-400">Scroll</span>
       <div
-        className="w-px h-10 bg-gradient-to-b from-red-600/40 to-transparent"
+        className="w-px h-10 bg-gradient-to-b from-red-600/50 to-transparent"
         style={{ animation: "scrollPulse 2s ease-in-out infinite" }}
       />
     </div>
