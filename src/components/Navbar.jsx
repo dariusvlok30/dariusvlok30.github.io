@@ -52,7 +52,7 @@ const Navbar = () => {
             duration={2}
           >
             <div className={`flex items-center gap-1 px-2 py-2 rounded-full backdrop-blur-2xl transition-all duration-500 ${
-              scrolled ? "bg-black/70" : "bg-black/40"
+              scrolled ? "bg-white/90" : "bg-white/70"
             }`}>
               {/* Logo */}
               <a
@@ -61,7 +61,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 px-4 py-2 mr-1 rounded-full hover:bg-white/[0.08] transition-colors duration-300"
               >
                 <Terminal className="w-4 h-4 text-[#4a90d9]" />
-                <span className="text-sm font-semibold text-white tracking-wide font-mono">DV</span>
+                <span className="text-sm font-semibold text-gray-900 tracking-wide font-mono">DV</span>
               </a>
 
               <div className="w-px h-5 bg-white/10 mr-1" />
@@ -75,8 +75,8 @@ const Navbar = () => {
                     onClick={(e) => handleClick(e, link.href)}
                     className={`relative px-4 py-2 text-sm rounded-full transition-all duration-300 ${
                       isActive
-                        ? "text-white bg-[#034694]/30 border border-[#034694]/40"
-                        : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                        ? "text-[#034694] bg-[#034694]/10 border border-[#034694]/30"
+                        : "text-gray-500 hover:text-white hover:bg-white/[0.06]"
                     }`}
                   >
                     {link.label}
@@ -93,7 +93,7 @@ const Navbar = () => {
             as="button"
             onClick={() => setMobileOpen(!mobileOpen)}
             containerClassName="rounded-full"
-            className="p-3 bg-black/60 rounded-full"
+            className="p-3 bg-white/90 rounded-full"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}
@@ -103,13 +103,13 @@ const Navbar = () => {
 
       {/* Mobile overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center gap-6 md:hidden">
+        <div className="fixed inset-0 z-40 bg-white/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-6 md:hidden">
           {navLinks.map((link, i) => (
             <a
               key={link.href}
               href={link.href}
               onClick={(e) => handleClick(e, link.href)}
-              className="text-2xl text-white/70 hover:text-white transition-colors duration-300"
+              className="text-2xl text-gray-700 hover:text-gray-900 transition-colors duration-300"
               style={{ animationDelay: `${i * 80}ms` }}
             >
               {link.label}
