@@ -80,7 +80,7 @@ const HeroSection = () => (
       <BlobReveal
         baseImageUrl="/images/portrait-main.png"
         revealImageUrl="/images/portrait-alt.png"
-        blobRadius={0.038}
+        blobRadius={0.14}
         fadeSpeed={4.5}
       />
       <p

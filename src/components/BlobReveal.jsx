@@ -9,7 +9,7 @@ import { useEffect, useRef, useCallback } from "react";
 export default function BlobReveal({
   baseImageUrl,
   revealImageUrl,
-  blobRadius = 0.076,
+  blobRadius = 0.14,
   fadeSpeed  = 4.5,
   style      = {},
 }) {
