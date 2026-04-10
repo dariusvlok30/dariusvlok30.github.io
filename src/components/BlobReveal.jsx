@@ -10,8 +10,8 @@ import { useEffect, useRef, useCallback } from "react";
 export default function BlobReveal({
   baseImageUrl,
   revealImageUrl,
-  blobRadius = 0.028,  // ~0.7–1 cm on a typical monitor
-  fadeSpeed  = 2.0,
+  blobRadius = 0.016,  // ~4–5mm — truly tiny peephole
+  fadeSpeed  = 5.5,    // fast decay so trail is very short
   style      = {},
 }) {
   const canvasRef = useRef(null);
@@ -99,7 +99,7 @@ export default function BlobReveal({
             const dx = px - cx, dy = py - cy;
             const d2 = (dx * dx + dy * dy) / (R * R);
             if (d2 < 1)
-              mask[py * W + px] = Math.min(1, mask[py * W + px] + (1 - d2) * 0.9);
+              mask[py * W + px] = Math.min(0.85, mask[py * W + px] + (1 - d2) * 0.55);
           }
         }
       }

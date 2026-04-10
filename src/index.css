@@ -2,6 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Holographic card ────────────────────────────────────────────────────── */
+.holo-card {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.12s ease-out;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1rem;
+}
+
+.holo-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--bg-x, 50%) var(--bg-y, 50%),
+    rgba(220, 38, 38, 0.22) 0%,
+    rgba(220, 38, 38, 0.07) 45%,
+    transparent 70%
+  );
+  transition: opacity 0.25s;
+}
+
+.holo-card:hover .holo-glow {
+  opacity: 1;
+}
+
+/* Corner decorators on holo cards */
+.holo-card::before,
+.holo-card::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  z-index: 20;
+}
+.holo-card::before {
+  top: -1px; left: -1px;
+  border-top: 2px solid rgba(220, 38, 38, 0.35);
+  border-left: 2px solid rgba(220, 38, 38, 0.35);
+}
+.holo-card::after {
+  bottom: -1px; right: -1px;
+  border-bottom: 2px solid rgba(220, 38, 38, 0.35);
+  border-right: 2px solid rgba(220, 38, 38, 0.35);
+}
+
 body {
     margin: 0;
     font-family:
