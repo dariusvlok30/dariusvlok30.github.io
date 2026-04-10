@@ -1,68 +1,68 @@
-import { useMotionValue, useMotionTemplate, motion } from "motion/react";
-import React, { useState } from "react";
-import { CanvasRevealEffect } from "./canvas-reveal-effect";
+import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
 
-const CHELSEA_COLORS = [
-  [3, 70, 148],
-  [26, 92, 176],
-  [10, 64, 128],
-];
+/**
+ * Holographic card — 3D tilt + radial red glow that follows the cursor.
+ * No heavy canvas per-card; pure CSS transforms + custom properties.
+ */
+export const CardSpotlight = ({ children, className, ...props }) => {
+  const cardRef = useRef(null);
 
-export const CardSpotlight = ({
-  children,
-  radius = 350,
-  className,
-  ...props
-}) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const maskImage = useMotionTemplate`radial-gradient(${radius}px circle at ${mouseX}px ${mouseY}px, white, transparent 80%)`;
+  const handleMouseMove = e => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width  / 2;
+    const cy = rect.height / 2;
+    const rotX =  (y - cy) / 14;
+    const rotY = -(x - cx) / 14;
 
-  const [isHovering, setIsHovering] = useState(false);
+    card.style.setProperty("--glow-x", `${x}px`);
+    card.style.setProperty("--glow-y", `${y}px`);
+    card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.01)`;
+  };
 
-  function handleMouseMove({ currentTarget, clientX, clientY }) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
+  const handleMouseLeave = () => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)";
+    card.style.setProperty("--glow-x", "50%");
+    card.style.setProperty("--glow-y", "50%");
+  };
 
   return (
     <div
-      className={cn(
-        "group/spotlight relative border border-gray-200 bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#034694]/40 shadow-sm hover:shadow-md",
-        className
-      )}
+      ref={cardRef}
+      className={cn("group/holo relative rounded-2xl transition-transform duration-150 ease-out", className)}
+      style={{
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        "--glow-x": "50%",
+        "--glow-y": "50%",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseLeave={handleMouseLeave}
       {...props}
     >
-      {/* Subtle spotlight glow on hover */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500 group-hover/spotlight:opacity-100"
-        style={{ maskImage, WebkitMaskImage: maskImage, backgroundColor: "rgba(3, 70, 148, 0.06)" }}
-      >
-        {isHovering && (
-          <CanvasRevealEffect
-            animationSpeed={3}
-            containerClassName="absolute inset-0"
-            colors={CHELSEA_COLORS}
-            dotSize={1.5}
-          />
-        )}
-      </motion.div>
+      {/* Radial red glow at cursor */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover/holo:opacity-100 transition-opacity duration-300"
+        style={{
+          background: "radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(220,38,38,0.13), transparent 65%)",
+        }}
+      />
 
       {/* Corner decorators */}
-      <span className="absolute -left-px -top-px block size-2 border-l-2 border-t-2 border-[#034694]/50 z-20 pointer-events-none" />
-      <span className="absolute -right-px -top-px block size-2 border-r-2 border-t-2 border-[#034694]/50 z-20 pointer-events-none" />
-      <span className="absolute -bottom-px -left-px block size-2 border-b-2 border-l-2 border-[#034694]/50 z-20 pointer-events-none" />
-      <span className="absolute -bottom-px -right-px block size-2 border-b-2 border-r-2 border-[#034694]/50 z-20 pointer-events-none" />
+      <span className="absolute -left-px -top-px block size-2 border-l-2 border-t-2 border-red-600/30 pointer-events-none z-20" />
+      <span className="absolute -right-px -top-px block size-2 border-r-2 border-t-2 border-red-600/30 pointer-events-none z-20" />
+      <span className="absolute -bottom-px -left-px block size-2 border-b-2 border-l-2 border-red-600/30 pointer-events-none z-20" />
+      <span className="absolute -bottom-px -right-px block size-2 border-b-2 border-r-2 border-red-600/30 pointer-events-none z-20" />
 
-      {/* Content always fully readable */}
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };

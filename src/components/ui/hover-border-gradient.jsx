@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-// Chelsea blue moving border gradient
+// Red moving border gradient
 const movingMap = {
-  TOP:    "radial-gradient(20.7% 50% at 50% 0%,   #1a5cb0 0%, rgba(3,70,148,0) 100%)",
-  LEFT:   "radial-gradient(16.6% 43.1% at 0% 50%, #1a5cb0 0%, rgba(3,70,148,0) 100%)",
-  BOTTOM: "radial-gradient(20.7% 50% at 50% 100%, #1a5cb0 0%, rgba(3,70,148,0) 100%)",
-  RIGHT:  "radial-gradient(16.2% 41.2% at 100% 50%, #1a5cb0 0%, rgba(3,70,148,0) 100%)",
+  TOP:    "radial-gradient(20.7% 50% at 50% 0%,   #dc2626 0%, rgba(220,38,38,0) 100%)",
+  LEFT:   "radial-gradient(16.6% 43.1% at 0% 50%, #dc2626 0%, rgba(220,38,38,0) 100%)",
+  BOTTOM: "radial-gradient(20.7% 50% at 50% 100%, #dc2626 0%, rgba(220,38,38,0) 100%)",
+  RIGHT:  "radial-gradient(16.2% 41.2% at 100% 50%, #dc2626 0%, rgba(220,38,38,0) 100%)",
 };
 
 const highlight =
-  "radial-gradient(75% 181% at 50% 50%, #034694 0%, rgba(3,70,148,0) 100%)";
+  "radial-gradient(75% 181% at 50% 50%, #ef4444 0%, rgba(220,38,38,0) 100%)";
 
 const directions = ["TOP", "LEFT", "BOTTOM", "RIGHT"];
 
