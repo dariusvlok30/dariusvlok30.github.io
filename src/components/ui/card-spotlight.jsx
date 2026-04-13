@@ -2,8 +2,8 @@ import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Holographic card — 3D tilt + radial red glow.
- * Tilt is normalized to card size: small cards tilt more, large cards tilt less.
+ * Holographic card — 3D tilt + radial green glow.
+ * Tilt capped by card size: large cards tilt less, small cards tilt more.
  */
 export const CardSpotlight = ({ children, className, ...props }) => {
   const cardRef = useRef(null);
@@ -14,20 +14,12 @@ export const CardSpotlight = ({ children, className, ...props }) => {
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    // Normalize -1 to 1 across the card, then scale to max degrees
     const nx = (x - rect.width  / 2) / (rect.width  / 2);
     const ny = (y - rect.height / 2) / (rect.height / 2);
-
-    // Larger cards get less tilt: max 3° for wide cards, 7° for compact cards
-    const maxTilt = rect.width > 500 ? 3 : rect.width > 350 ? 5 : 7;
-
-    const rotX =  ny * maxTilt;
-    const rotY = -nx * maxTilt;
-
+    const maxTilt = rect.width > 500 ? 2.5 : rect.width > 350 ? 4 : 6;
     card.style.setProperty("--bg-x", `${(x / rect.width)  * 100}%`);
     card.style.setProperty("--bg-y", `${(y / rect.height) * 100}%`);
-    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    card.style.transform = `perspective(1000px) rotateX(${ny * maxTilt}deg) rotateY(${-nx * maxTilt}deg)`;
   };
 
   const handleMouseLeave = () => {

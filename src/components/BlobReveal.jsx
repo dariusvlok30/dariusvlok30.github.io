@@ -1,25 +1,30 @@
 import { useEffect, useRef, useCallback } from "react";
 
 /**
- * BlobReveal
- * - Hover over the portrait → small organic blob reveals the helmet underneath
- * - Move cursor away → reveal fades out quickly
- * - No auto-drift, no intro — pure intentional interaction
+ * BlobReveal — Lando Norris-style spotlight reveal.
+ * A large, smooth circular spotlight follows the cursor and reveals
+ * the F1 suit beneath the face portrait.
+ * - Smooth lerp position tracking
+ * - Soft feathered edge
+ * - Instant fade in / fast fade out on cursor leave
  */
 export default function BlobReveal({
   baseImageUrl,
   revealImageUrl,
-  blobRadius = 0.14,
-  fadeSpeed  = 4.5,
-  style      = {},
+  spotRadius  = 0.22,   // fraction of shorter dimension — large spotlight
+  lerpSpeed   = 0.12,   // how snappily spotlight follows cursor (0=no follow, 1=instant)
+  fadeInSpeed = 8.0,    // alpha ramp-up speed
+  fadeOutSpeed= 5.0,    // alpha ramp-down speed on leave
+  style       = {},
 }) {
   const canvasRef = useRef(null);
   const rafRef    = useRef(null);
   const stateRef  = useRef({
-    mouse:    { x: -1, y: -1 },
-    active:   false,
-    maskData: null,
-    time:     0,
+    targetX: 0.5, targetY: 0.35,
+    lerpX:   0.5, lerpY:   0.35,
+    alpha:   0,
+    active:  false,
+    time:    0,
   });
 
   const loadImage = src =>
@@ -37,69 +42,29 @@ export default function BlobReveal({
     const ctx = canvas.getContext("2d");
     let running = true;
 
-    const maskCanvas = document.createElement("canvas");
-    const maskCtx    = maskCanvas.getContext("2d");
+    // Pre-allocate offscreen canvas (reused every frame — no per-frame allocation)
+    const offscreen = document.createElement("canvas");
+    const offCtx    = offscreen.getContext("2d");
 
     // ── Resize ───────────────────────────────────────────────────────────────
     const resize = () => {
       const { offsetWidth: w, offsetHeight: h } = canvas.parentElement || canvas;
-      canvas.width  = maskCanvas.width  = w;
-      canvas.height = maskCanvas.height = h;
-      stateRef.current.maskData = new Float32Array(w * h);
+      canvas.width  = offscreen.width  = w;
+      canvas.height = offscreen.height = h;
     };
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas.parentElement || canvas);
 
-    // ── Organic noise for cursor blob shape ──────────────────────────────────
-    const noise = (theta, t) =>
-      1
-      + Math.sin(theta * 3  + t * 0.8)  * 0.08
-      + Math.cos(theta * 5  + t * 1.2)  * 0.05
-      + Math.sin(theta * 9  + t * 0.5)  * 0.03;
-
-    // ── Stamp organic blob at cursor position ────────────────────────────────
-    function stamp(mask, W, H, cx, cy, R, t) {
-      const outer = R * 1.2;
-      const x0 = Math.max(0, Math.floor(cx - outer));
-      const x1 = Math.min(W - 1, Math.ceil(cx + outer));
-      const y0 = Math.max(0, Math.floor(cy - outer));
-      const y1 = Math.min(H - 1, Math.ceil(cy + outer));
-
-      const N = 48;
-      const verts = Array.from({ length: N }, (_, k) => {
-        const a = (k / N) * Math.PI * 2;
-        const r = R * noise(a, t);
-        return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
-      });
-
-      for (let py = y0; py <= y1; py++) {
-        for (let px = x0; px <= x1; px++) {
-          let inside = false;
-          for (let j = 0, i = N - 1; j < N; i = j++) {
-            const { x: xi, y: yi } = verts[i];
-            const { x: xj, y: yj } = verts[j];
-            if (((yi > py) !== (yj > py)) &&
-                (px < ((xj - xi) * (py - yi)) / (yj - yi) + xi))
-              inside = !inside;
-          }
-          if (inside) {
-            const dx = px - cx, dy = py - cy;
-            const d  = Math.sqrt(dx * dx + dy * dy) / R;
-            const a  = Math.max(0, 1 - d * d);
-            mask[py * W + px] = Math.min(1, mask[py * W + px] + a);
-          }
-        }
-      }
-    }
-
+    // ── Cover-fit helper ─────────────────────────────────────────────────────
     function drawCover(c, img, W, H) {
       const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-      const sw = img.naturalWidth * scale, sh = img.naturalHeight * scale;
+      const sw = img.naturalWidth  * scale;
+      const sh = img.naturalHeight * scale;
       c.drawImage(img, (W - sw) / 2, (H - sh) / 2, sw, sh);
     }
 
-    // ── Render loop ──────────────────────────────────────────────────────────
+    // ── Main loop ────────────────────────────────────────────────────────────
     let baseImg, revealImg, lastTs = 0;
 
     const draw = ts => {
@@ -114,48 +79,51 @@ export default function BlobReveal({
       const { width: W, height: H } = canvas;
       if (!W || !H || !baseImg) return;
 
-      const SHORT = Math.min(W, H);
-      const R     = SHORT * blobRadius;
-      const mask  = st.maskData;
+      // Lerp spotlight position toward cursor
+      const t = Math.min(1, lerpSpeed * 60 * dt);
+      st.lerpX += (st.targetX - st.lerpX) * t;
+      st.lerpY += (st.targetY - st.lerpY) * t;
 
-      // Decay — fades out when cursor leaves
-      const decay = Math.exp(-fadeSpeed * dt);
-      for (let i = 0; i < mask.length; i++) mask[i] *= decay;
-
-      // Stamp blob only while cursor is over the portrait
-      if (st.active && st.mouse.x >= 0) {
-        stamp(mask, W, H, st.mouse.x * W, st.mouse.y * H, R, st.time);
+      // Fade alpha in/out
+      if (st.active) {
+        st.alpha = Math.min(1, st.alpha + fadeInSpeed  * dt);
+      } else {
+        st.alpha = Math.max(0, st.alpha - fadeOutSpeed * dt);
       }
 
-      // Build mask image
-      const imgData = maskCtx.createImageData(W, H);
-      const d = imgData.data;
-      for (let i = 0; i < mask.length; i++) {
-        const a = Math.round(Math.min(255, mask[i] * 255));
-        const o = i * 4;
-        d[o] = d[o + 1] = d[o + 2] = 255;
-        d[o + 3] = a;
-      }
-      maskCtx.putImageData(imgData, 0, 0);
-
-      // Composite
+      // ── Draw base portrait ────────────────────────────────────────────────
       ctx.clearRect(0, 0, W, H);
       drawCover(ctx, baseImg, W, H);
 
-      if (revealImg) {
-        const tmp = document.createElement("canvas");
-        tmp.width = W; tmp.height = H;
-        const tc = tmp.getContext("2d");
-        drawCover(tc, revealImg, W, H);
-        tc.globalCompositeOperation = "destination-in";
-        tc.drawImage(maskCanvas, 0, 0);
-        ctx.drawImage(tmp, 0, 0);
+      // ── Draw spotlight reveal ─────────────────────────────────────────────
+      if (st.alpha > 0.005 && revealImg) {
+        const lx = st.lerpX * W;
+        const ly = st.lerpY * H;
+        const R  = Math.min(W, H) * spotRadius;
+
+        // Draw F1 suit to offscreen
+        offCtx.clearRect(0, 0, W, H);
+        drawCover(offCtx, revealImg, W, H);
+
+        // Soft circular mask via radial gradient (destination-in)
+        offCtx.globalCompositeOperation = "destination-in";
+        const inner = R * 0.55; // hard centre
+        const grad  = offCtx.createRadialGradient(lx, ly, inner, lx, ly, R);
+        grad.addColorStop(0, `rgba(255,255,255,${st.alpha})`);
+        grad.addColorStop(1, "rgba(255,255,255,0)");
+        offCtx.fillStyle = grad;
+        offCtx.fillRect(0, 0, W, H);
+        offCtx.globalCompositeOperation = "source-over";
+
+        // Composite onto main canvas
+        ctx.drawImage(offscreen, 0, 0);
       }
     };
 
     Promise.all([loadImage(baseImageUrl), loadImage(revealImageUrl)])
       .then(([b, r]) => {
-        baseImg = b; revealImg = r;
+        baseImg   = b;
+        revealImg = r;
         rafRef.current = requestAnimationFrame(draw);
       })
       .catch(() => { rafRef.current = requestAnimationFrame(draw); });
@@ -165,12 +133,15 @@ export default function BlobReveal({
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
     };
-  }, [baseImageUrl, revealImageUrl, blobRadius, fadeSpeed]);
+  }, [baseImageUrl, revealImageUrl, spotRadius, lerpSpeed, fadeInSpeed, fadeOutSpeed]);
 
+  // ── Handlers ─────────────────────────────────────────────────────────────
   const onMouseMove = useCallback(e => {
     const r = e.currentTarget.getBoundingClientRect();
-    stateRef.current.mouse  = { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
-    stateRef.current.active = true;
+    const st = stateRef.current;
+    st.targetX = (e.clientX - r.left)  / r.width;
+    st.targetY = (e.clientY - r.top)   / r.height;
+    st.active  = true;
   }, []);
 
   const onMouseLeave = useCallback(() => {
@@ -181,8 +152,10 @@ export default function BlobReveal({
     e.preventDefault();
     const t = e.touches[0];
     const r = e.currentTarget.getBoundingClientRect();
-    stateRef.current.mouse  = { x: (t.clientX - r.left) / r.width, y: (t.clientY - r.top) / r.height };
-    stateRef.current.active = true;
+    const st = stateRef.current;
+    st.targetX = (t.clientX - r.left) / r.width;
+    st.targetY = (t.clientY - r.top)  / r.height;
+    st.active  = true;
   }, []);
 
   const onTouchEnd = useCallback(() => {

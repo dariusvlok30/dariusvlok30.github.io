@@ -16,7 +16,7 @@ import {
 
 function App() {
   return (
-    <div className="App min-h-screen bg-[#050505] text-white font-['Figtree',sans-serif] overflow-x-hidden">
+    <div className="App min-h-screen bg-white text-gray-900 font-['Figtree',sans-serif] overflow-x-hidden">
       {/* Fixed particle canvas — sits behind every section */}
       <ParticleBackground />
 

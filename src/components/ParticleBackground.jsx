@@ -67,7 +67,7 @@ export default function ParticleBackground() {
         const directionX = (Math.random() * 0.4) - 0.2;
         const directionY = (Math.random() * 0.4) - 0.2;
         // Red instead of purple
-        const color = "rgba(220, 38, 38, 0.75)";
+        const color = "rgba(34, 197, 94, 0.65)";
         particles.push(new Particle(x, y, directionX, directionY, size, color));
       }
     }
@@ -89,12 +89,12 @@ export default function ParticleBackground() {
               const distA = Math.sqrt(dxA * dxA + dyA * dyA);
               if (distA < mouse.radius) {
                 // Near cursor: brighter red lines
-                ctx.strokeStyle = `rgba(255, 80, 80, ${opacity})`;
+                ctx.strokeStyle = `rgba(74, 222, 128, ${opacity})`;
               } else {
-                ctx.strokeStyle = `rgba(180, 30, 30, ${opacity * 0.5})`;
+                ctx.strokeStyle = `rgba(22, 163, 74, ${opacity * 0.5})`;
               }
             } else {
-              ctx.strokeStyle = `rgba(180, 30, 30, ${opacity * 0.5})`;
+              ctx.strokeStyle = `rgba(22, 163, 74, ${opacity * 0.5})`;
             }
 
             ctx.lineWidth = 0.8;
