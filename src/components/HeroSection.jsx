@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { Mail, Linkedin, MapPin, ArrowRight, ChevronDown } from "lucide-react";
 import { personalInfo } from "../data/mock";
-import BlobReveal from "./BlobReveal";
+// import BlobReveal from "./BlobReveal"; // re-enable portrait block when ready (see norris.md)
 
 const ROLES = [
   "Full Stack AI Engineer",
@@ -76,8 +76,6 @@ const HeroSection = () => {
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   // Parallax: background text drifts up slower than scroll
   const bgTextY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  // Portrait lifts slightly on scroll
-  const portraitY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
 
   return (
     <section
@@ -128,28 +126,7 @@ const HeroSection = () => {
         />
       </motion.div>
 
-      {/* ── Portrait — centered, parallax ── */}
-      <motion.div
-        className="absolute"
-        style={{
-          zIndex: 2,
-          bottom: 0,
-          left: "50%",
-          translateX: "-50%",
-          height: "94%",
-          aspectRatio: "3 / 4",
-          y: portraitY,
-        }}
-      >
-        <BlobReveal
-          baseImageUrl="/images/portrait-main.png"
-          revealImageUrl="/images/portrait-alt.png"
-          spotRadius={0.22}
-          lerpSpeed={0.10}
-          fadeInSpeed={9}
-          fadeOutSpeed={5.5}
-        />
-      </motion.div>
+      {/* Portrait disabled — re-enable when ready (see norris.md) */}
 
       {/* Bottom fade */}
       <div
@@ -257,19 +234,6 @@ const HeroSection = () => {
             </span>
             {personalInfo.location}
           </span>
-        </FloatingBadge>
-
-        {/* Hover hint */}
-        <FloatingBadge delay={2.0} style={{}}>
-          <motion.div
-            animate={{ opacity: [0.6, 1, 0.6] }}
-            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            className="px-3 py-2 rounded-xl text-center"
-            style={{ background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.18)" }}
-          >
-            <p className="text-[9px] font-mono tracking-[0.18em] uppercase text-green-700/60">hover portrait</p>
-            <p className="text-[9px] text-gray-400 mt-0.5">to reveal F1 suit</p>
-          </motion.div>
         </FloatingBadge>
 
         {/* Speed stat */}
