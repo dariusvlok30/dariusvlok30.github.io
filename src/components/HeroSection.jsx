@@ -126,7 +126,24 @@ const HeroSection = () => {
         />
       </motion.div>
 
-      {/* Portrait disabled — re-enable when ready (see norris.md) */}
+      {/* ── Portrait — face only, no reveal ── */}
+      <motion.div
+        className="absolute"
+        style={{
+          zIndex: 2,
+          bottom: 0,
+          left: "50%",
+          translateX: "-50%",
+          height: "94%",
+          aspectRatio: "3 / 4",
+        }}
+      >
+        <img
+          src="/images/portrait-main.png"
+          alt="Darius Vlok"
+          style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom" }}
+        />
+      </motion.div>
 
       {/* Bottom fade */}
       <div
